@@ -1,0 +1,76 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/objects/door.tscn" id="3"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(30.0, 0.2, 30.0)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(30.0, 0.2, 30.0)
+
+[sub_resource type="StandardMaterial3D" id="Mat_SpaceA"]
+albedo_color = Color(0.9, 0.9, 0.9, 1.0)
+
+[sub_resource type="StandardMaterial3D" id="Mat_SpaceB"]
+albedo_color = Color(0.05, 0.2, 0.1, 1.0)
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1")
+
+[node name="SpaceA" type="Node3D" parent="."]
+
+[node name="Floor" type="StaticBody3D" parent="SpaceA"]
+position = Vector3(0.0, -0.1, 0.0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SpaceA/Floor"]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = SubResource("Mat_SpaceA")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SpaceA/Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Light" type="DirectionalLight3D" parent="SpaceA"]
+rotation_degrees = Vector3(-45.0, -30.0, 0.0)
+light_color = Color(1.0, 1.0, 1.0, 1.0)
+light_energy = 1.5
+
+[node name="DoorA" parent="SpaceA" instance=ExtResource("3")]
+position = Vector3(0.0, 0.0, -5.0)
+
+[node name="SpaceB" type="Node3D" parent="."]
+position = Vector3(200.0, 0.0, 0.0)
+
+[node name="Floor" type="StaticBody3D" parent="SpaceB"]
+position = Vector3(0.0, -0.1, 0.0)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SpaceB/Floor"]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = SubResource("Mat_SpaceB")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SpaceB/Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Light" type="DirectionalLight3D" parent="SpaceB"]
+rotation_degrees = Vector3(-45.0, -30.0, 0.0)
+light_color = Color(0.2, 1.0, 0.3, 1.0)
+light_energy = 1.0
+
+[node name="DoorB" parent="SpaceB" instance=ExtResource("3")]
+position = Vector3(0.0, 0.0, -5.0)
+
+[node name="Player" parent="." instance=ExtResource("2")]
+position = Vector3(0.0, 1.0, 0.0)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="DebugLabel" type="Label" parent="HUD"]
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 500.0
+offset_bottom = 40.0
+theme_override_colors/font_color = Color(1, 1, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+text = "Pos: (0.0, 0.0, 0.0)"
