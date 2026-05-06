@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/objects/door.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/door_wheel.tscn" id="4"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_floor"]
 size = Vector3(30.0, 0.2, 30.0)
@@ -38,6 +39,8 @@ light_energy = 1.5
 
 [node name="DoorA" parent="SpaceA" instance=ExtResource("3")]
 position = Vector3(0.0, 0.0, -5.0)
+door_id = "door_a"
+display_name = "SpaceA の扉"
 
 [node name="SpaceB" type="Node3D" parent="."]
 position = Vector3(200.0, 0.0, 0.0)
@@ -59,6 +62,8 @@ light_energy = 1.0
 
 [node name="DoorB" parent="SpaceB" instance=ExtResource("3")]
 position = Vector3(0.0, 0.0, -5.0)
+door_id = "door_b"
+display_name = "SpaceB の扉"
 
 [node name="Player" parent="." instance=ExtResource("2")]
 position = Vector3(0.0, 1.0, 0.0)
@@ -74,3 +79,5 @@ theme_override_colors/font_color = Color(1, 1, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 2
 text = "Pos: (0.0, 0.0, 0.0)"
+
+[node name="DoorWheel" parent="." instance=ExtResource("4")]

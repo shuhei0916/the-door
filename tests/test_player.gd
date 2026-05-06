@@ -1,6 +1,7 @@
 extends GutTest
 
 const PlayerScene: PackedScene = preload("res://scenes/player/player.tscn")
+const DoorScene: PackedScene = preload("res://scenes/objects/door.tscn")
 
 func test_player_can_be_instantiated() -> void:
 	var player: Player = PlayerScene.instantiate()
@@ -41,4 +42,25 @@ func test_teleport_to_sets_facing_direction() -> void:
 	add_child_autofree(player)
 	var rotated_basis: Basis = Basis().rotated(Vector3.UP, PI)
 	player.teleport_to(Transform3D(rotated_basis, Vector3.ZERO))
-	assert_true(absf(player.rotation.y - PI) < 0.01, "should face PI after 180-degree rotation")
+	assert_true(absf(absf(player.rotation.y) - PI) < 0.01, "should face PI after 180-degree rotation")
+
+func test_no_hold_flag_initially() -> void:
+	var player: Player = PlayerScene.instantiate()
+	add_child_autofree(player)
+	assert_false(player.is_interacting_with_wheel)
+
+func test_get_nearby_door_returns_null_when_registry_empty() -> void:
+	var player: Player = PlayerScene.instantiate()
+	add_child_autofree(player)
+	var nearby: Door = Door.get_nearest(get_tree(), player.global_position, player.INTERACT_RANGE)
+	assert_null(nearby)
+
+func test_get_nearby_door_returns_door_when_in_range() -> void:
+	var player: Player = PlayerScene.instantiate()
+	var door: Door = DoorScene.instantiate()
+	add_child_autofree(player)
+	add_child_autofree(door)
+	player.global_position = Vector3(0.0, 0.0, 0.0)
+	door.global_position = Vector3(1.0, 0.0, 0.0)
+	var nearby: Door = Door.get_nearest(get_tree(), player.global_position, player.INTERACT_RANGE)
+	assert_eq(nearby, door)

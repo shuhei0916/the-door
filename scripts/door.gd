@@ -1,28 +1,38 @@
 class_name Door
 extends Node3D
 
-signal teleport_requested(body: Node3D)
+@export var door_id: String = ""
+@export var display_name: String = ""
 
-@export var linked_door: Door = null
+func _ready() -> void:
+	add_to_group("doors")
 
-const TELEPORT_COOLDOWN: float = 1.0
-
-var _on_cooldown: bool = false
+func _exit_tree() -> void:
+	remove_from_group("doors")
 
 func get_spawn_transform() -> Transform3D:
 	return $SpawnPoint.global_transform
 
-func _on_trigger_area_body_entered(body: Node3D) -> void:
-	if not body.is_in_group("player"):
-		return
-	if _on_cooldown:
-		return
-	teleport_requested.emit(body)
-	_start_cooldown()
+func get_destinations() -> Array[Door]:
+	var result: Array[Door] = []
+	for node in get_tree().get_nodes_in_group("doors"):
+		if node != self and node is Door:
+			result.append(node as Door)
+	return result
 
-func _start_cooldown() -> void:
-	_on_cooldown = true
-	$CooldownTimer.start(TELEPORT_COOLDOWN)
+func interact_random(player: Node3D) -> void:
+	var dests: Array[Door] = get_destinations()
+	if dests.is_empty():
+		return
+	player.teleport_to(dests.pick_random().get_spawn_transform())
 
-func _on_cooldown_timer_timeout() -> void:
-	_on_cooldown = false
+static func get_nearest(tree: SceneTree, from: Vector3, max_dist: float) -> Door:
+	var nearest: Door = null
+	var nearest_sq: float = max_dist * max_dist
+	for node in tree.get_nodes_in_group("doors"):
+		if node is Door:
+			var sq: float = from.distance_squared_to((node as Door).global_position)
+			if sq < nearest_sq:
+				nearest_sq = sq
+				nearest = node as Door
+	return nearest
