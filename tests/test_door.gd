@@ -37,26 +37,47 @@ func test_get_destinations_returns_other_doors() -> void:
 	assert_eq(dests.size(), 1)
 	assert_true(dests.has(door_b))
 
-func test_interact_random_does_nothing_when_no_destinations() -> void:
+func test_door_has_linked_door_property() -> void:
 	var door: Door = DoorScene.instantiate()
-	var player: Player = PlayerScene.instantiate()
 	add_child_autofree(door)
-	add_child_autofree(player)
-	var initial_pos: Vector3 = player.global_position
-	door.interact_random(player)
-	assert_eq(player.global_position, initial_pos)
+	assert_true("linked_door" in door)
 
-func test_interact_random_moves_player_to_another_door() -> void:
+func test_portal_surface_exists() -> void:
+	var door: Door = DoorScene.instantiate()
+	add_child_autofree(door)
+	assert_not_null(door.get_node_or_null("PortalSurface"))
+
+func test_door_starts_in_closed_state() -> void:
+	var door: Door = DoorScene.instantiate()
+	add_child_autofree(door)
+	assert_eq(door.state, Door.State.CLOSED)
+
+func test_portal_hidden_when_door_closed() -> void:
+	var door: Door = DoorScene.instantiate()
+	add_child_autofree(door)
+	var portal := door.get_node_or_null("PortalSurface")
+	assert_false(portal.visible)
+
+func test_open_transitions_to_opening_state() -> void:
+	var door: Door = DoorScene.instantiate()
+	add_child_autofree(door)
+	door.open()
+	assert_eq(door.state, Door.State.OPENING)
+
+func test_open_without_hinge_goes_to_open_state() -> void:
+	var door: Door = DoorScene.instantiate()
+	add_child_autofree(door)
+	var hinge := door.get_node_or_null("HingePoint")
+	if hinge:
+		door.remove_child(hinge)
+		hinge.queue_free()
+	door.open()
+	assert_eq(door.state, Door.State.OPEN)
+
+func test_open_sets_linked_door() -> void:
 	var door_a: Door = DoorScene.instantiate()
 	var door_b: Door = DoorScene.instantiate()
-	var player: Player = PlayerScene.instantiate()
 	add_child_autofree(door_a)
 	add_child_autofree(door_b)
-	add_child_autofree(player)
-	door_b.global_position = Vector3(50.0, 0.0, 0.0)
-	player.global_position = Vector3(0.0, 0.0, 0.0)
-	door_a.interact_random(player)
-	assert_true(
-		player.global_position.distance_to(door_b.get_spawn_transform().origin) < 0.01,
-		"player should be near door_b spawn"
-	)
+	door_a.open(door_b)
+	assert_eq(door_a.linked_door, door_b)

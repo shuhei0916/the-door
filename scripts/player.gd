@@ -64,7 +64,7 @@ func _update_interaction(delta: float) -> void:
 
 	if Input.is_action_just_released("interact"):
 		if _is_holding and _hold_timer < HOLD_THRESHOLD and nearby:
-			nearby.interact_random(self)
+			nearby.open()
 		_is_holding = false
 		_hold_timer = 0.0
 
