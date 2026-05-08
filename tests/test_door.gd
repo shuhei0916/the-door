@@ -85,3 +85,29 @@ func test_open_without_destination_does_not_link_portal() -> void:
 	door.open()
 	var portal: Portal = door.get_node_or_null("PortalSurface") as Portal
 	assert_null(portal.exit_portal)
+
+func test_open_with_destination_also_opens_destination() -> void:
+	var door_a: Door = DoorScene.instantiate()
+	var door_b: Door = DoorScene.instantiate()
+	add_child_autofree(door_a)
+	add_child_autofree(door_b)
+	var hinge_a := door_a.get_node_or_null("HingePoint")
+	var hinge_b := door_b.get_node_or_null("HingePoint")
+	if hinge_a:
+		door_a.remove_child(hinge_a)
+		hinge_a.queue_free()
+	if hinge_b:
+		door_b.remove_child(hinge_b)
+		hinge_b.queue_free()
+	door_a.open(door_b)
+	assert_eq(door_b.state, Door.State.OPEN)
+
+func test_portal_linked_bidirectionally() -> void:
+	var door_a: Door = DoorScene.instantiate()
+	var door_b: Door = DoorScene.instantiate()
+	add_child_autofree(door_a)
+	add_child_autofree(door_b)
+	door_a.open(door_b)
+	var portal_a: Portal = door_a.get_node_or_null("PortalSurface") as Portal
+	var portal_b: Portal = door_b.get_node_or_null("PortalSurface") as Portal
+	assert_eq(portal_b.exit_portal, portal_a)
