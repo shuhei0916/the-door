@@ -5,7 +5,6 @@ enum State { CLOSED, OPENING, OPEN, CLOSING }
 
 @export var door_id: String = ""
 @export var display_name: String = ""
-@export var linked_door: Door = null
 
 var state: State = State.CLOSED
 
@@ -15,8 +14,6 @@ signal closed
 func _ready() -> void:
 	add_to_group("doors")
 	_update_portal_state()
-	if linked_door:
-		call_deferred("_link_portal")
 	call_deferred("_update_portal_state")
 	call_deferred("_connect_portal_teleport")
 
@@ -26,10 +23,9 @@ func _exit_tree() -> void:
 func open(destination: Door = null) -> void:
 	if state != State.CLOSED:
 		return
-	if destination:
-		linked_door = destination
 	state = State.OPENING
-	_link_portal()
+	if destination:
+		_link_portal(destination)
 	_update_portal_state()
 	_start_open_animation()
 
@@ -64,7 +60,6 @@ func _start_close_animation() -> void:
 
 func _on_close_done() -> void:
 	state = State.CLOSED
-	linked_door = null
 	_update_portal_state()
 	closed.emit()
 
@@ -78,11 +73,9 @@ func _update_portal_state() -> void:
 	if teleport:
 		teleport.monitoring = is_open
 
-func _link_portal() -> void:
-	if not linked_door:
-		return
+func _link_portal(destination: Door) -> void:
 	var my_portal: Portal = get_node_or_null("PortalSurface")
-	var exit_portal_node: Portal = linked_door.get_node_or_null("PortalSurface")
+	var exit_portal_node: Portal = destination.get_node_or_null("PortalSurface")
 	if my_portal and exit_portal_node:
 		my_portal.exit_portal = exit_portal_node
 

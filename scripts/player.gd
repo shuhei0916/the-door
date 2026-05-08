@@ -7,13 +7,10 @@ const SPEED: float = 5.0
 const JUMP_VELOCITY: float = 4.5
 const MOUSE_SENSITIVITY: float = 0.002
 const INTERACT_RANGE: float = 2.5
-const HOLD_THRESHOLD: float = 0.5
 
 @onready var _camera: Camera3D = $Camera3D
 
 var is_interacting_with_wheel: bool = false
-var _hold_timer: float = 0.0
-var _is_holding: bool = false
 
 func _ready() -> void:
 	if DisplayServer.get_name() != "headless":
@@ -41,32 +38,14 @@ func _physics_process(delta: float) -> void:
 func _process(delta: float) -> void:
 	_update_interaction(delta)
 
-func _update_interaction(delta: float) -> void:
+func _update_interaction(_delta: float) -> void:
 	if is_interacting_with_wheel:
-		if Input.is_action_just_released("interact"):
-			_is_holding = false
-			_hold_timer = 0.0
 		return
 
-	var nearby: Door = Door.get_nearest(get_tree(), global_position, INTERACT_RANGE)
-
-	if Input.is_action_just_pressed("interact") and nearby:
-		_hold_timer = 0.0
-		_is_holding = true
-
-	if _is_holding:
-		_hold_timer += delta
-		if _hold_timer >= HOLD_THRESHOLD:
-			_is_holding = false
-			var current_nearby: Door = Door.get_nearest(get_tree(), global_position, INTERACT_RANGE)
-			if current_nearby:
-				interact_hold_started.emit(current_nearby)
-
-	if Input.is_action_just_released("interact"):
-		if _is_holding and _hold_timer < HOLD_THRESHOLD and nearby:
-			nearby.open()
-		_is_holding = false
-		_hold_timer = 0.0
+	if Input.is_action_just_pressed("interact"):
+		var nearby: Door = Door.get_nearest(get_tree(), global_position, INTERACT_RANGE)
+		if nearby:
+			interact_hold_started.emit(nearby)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
