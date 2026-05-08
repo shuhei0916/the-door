@@ -7,6 +7,7 @@ enum State { CLOSED, OPENING, OPEN, CLOSING }
 @export var display_name: String = ""
 
 var state: State = State.CLOSED
+var _destination: Door = null
 
 signal opened
 signal closed
@@ -24,8 +25,10 @@ func open(destination: Door = null) -> void:
 	if state != State.CLOSED:
 		return
 	state = State.OPENING
+	_destination = destination
 	if destination:
 		_link_portal(destination)
+		destination.open(self)
 	_update_portal_state()
 	_start_open_animation()
 
@@ -59,8 +62,12 @@ func _start_close_animation() -> void:
 	tween.tween_callback(_on_close_done)
 
 func _on_close_done() -> void:
+	var dest := _destination
+	_destination = null
 	state = State.CLOSED
 	_update_portal_state()
+	if dest and dest.state != State.CLOSED:
+		dest.close()
 	closed.emit()
 
 func _update_portal_state() -> void:
@@ -87,7 +94,17 @@ func _connect_portal_teleport() -> void:
 	if teleport and not teleport.teleported.is_connected(_on_portal_teleported):
 		teleport.teleported.connect(_on_portal_teleported)
 
+func _disable_portal_teleport() -> void:
+	var portal: Portal = get_node_or_null("PortalSurface")
+	if portal == null:
+		return
+	var teleport: Area3D = portal.get_node_or_null("PortalTeleport")
+	if teleport:
+		teleport.monitoring = false
+
 func _on_portal_teleported(_root: Node3D) -> void:
+	if _destination:
+		_destination._disable_portal_teleport()
 	close()
 
 func get_spawn_transform() -> Transform3D:
