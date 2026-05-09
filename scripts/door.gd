@@ -74,11 +74,11 @@ func _update_portal_state() -> void:
 	var portal: Portal = get_node_or_null("PortalSurface")
 	if portal == null:
 		return
-	var is_open: bool = (state == State.OPEN)
-	portal.visible = is_open
+	var is_animating: bool = (state == State.OPENING or state == State.OPEN)
+	portal.visible = is_animating and portal.exit_portal != null
 	var teleport: Area3D = portal.get_node_or_null("PortalTeleport")
 	if teleport:
-		teleport.monitoring = is_open
+		teleport.monitoring = (state == State.OPEN)
 
 func _link_portal(destination: Door) -> void:
 	var my_portal: Portal = get_node_or_null("PortalSurface")

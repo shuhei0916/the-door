@@ -17,9 +17,13 @@ func _process(_delta: float) -> void:
 	_debug_label.text = "Pos: (%.1f, %.1f, %.1f)" % [pos.x, pos.y, pos.z]
 
 func _on_interact_hold_started(door: Door) -> void:
-	_current_door = door
-	_player.is_interacting_with_wheel = true
-	_door_wheel.show_for_door(door)
+	match door.state:
+		Door.State.OPEN:
+			door.close()
+		Door.State.CLOSED:
+			_current_door = door
+			_player.is_interacting_with_wheel = true
+			_door_wheel.show_for_door(door)
 
 func _on_destination_selected(dest_door: Door) -> void:
 	_player.is_interacting_with_wheel = false
