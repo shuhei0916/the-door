@@ -3,6 +3,7 @@ extends Node3D
 @onready var _player: Player = $Player
 @onready var _debug_label: Label = $HUD/DebugLabel
 @onready var _door_wheel: DoorWheel = $DoorWheel
+@onready var _pause_menu: PauseMenu = $PauseMenu
 
 var _current_door: Door = null
 
@@ -11,6 +12,17 @@ func _ready() -> void:
 	_player.interact_hold_started.connect(_on_interact_hold_started)
 	_door_wheel.destination_selected.connect(_on_destination_selected)
 	_door_wheel.cancelled.connect(_on_wheel_cancelled)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not event.is_action_pressed("ui_cancel"):
+		return
+	if _player.is_interacting_with_wheel:
+		return
+	if _pause_menu.visible:
+		_pause_menu.hide_menu()
+	else:
+		_pause_menu.show_menu()
+	get_viewport().set_input_as_handled()
 
 func _process(_delta: float) -> void:
 	var pos: Vector3 = _player.global_position

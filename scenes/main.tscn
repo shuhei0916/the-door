@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/objects/door.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ui/door_wheel.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/ui/pause_menu.tscn" id="5"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_floor"]
 size = Vector3(30, 0.2, 30)
@@ -129,3 +130,5 @@ theme_override_constants/outline_size = 2
 text = "Pos: (0.0, 0.0, 0.0)"
 
 [node name="DoorWheel" parent="." unique_id=1257612392 instance=ExtResource("4")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("5")]

@@ -52,8 +52,7 @@ func _input(event: InputEvent) -> void:
 		rotate_y(-event.relative.x * MOUSE_SENSITIVITY)
 		_camera.rotate_x(-event.relative.y * MOUSE_SENSITIVITY)
 		_camera.rotation.x = clamp(_camera.rotation.x, -PI / 2.0, PI / 2.0)
-	if event.is_action_pressed("ui_cancel") and not is_interacting_with_wheel:
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
 
 func _get_input_direction() -> Vector2:
 	return Input.get_vector("move_left", "move_right", "move_forward", "move_back")
