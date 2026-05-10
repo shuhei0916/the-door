@@ -102,10 +102,12 @@ func _update_highlight() -> void:
 		return
 
 	var angle: float = dir.angle()
-	var count: int = _option_doors.size()
-	var normalized: float = fposmod(angle + PI / 2.0, TAU)
-	var idx: int = int(normalized / (TAU / float(count))) % count
-	_set_highlight(idx)
+	_set_highlight(_get_sector_index(angle, _option_doors.size()))
+
+func _get_sector_index(angle: float, count: int) -> int:
+	var sector_size: float = TAU / float(count)
+	var normalized: float = fposmod(angle + PI / 2.0 + sector_size / 2.0, TAU)
+	return int(normalized / sector_size) % count
 
 func _set_highlight(idx: int) -> void:
 	if _highlighted_index == idx:
