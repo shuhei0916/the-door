@@ -132,3 +132,13 @@ func test_portal_linked_bidirectionally() -> void:
 	var portal_a: Portal = door_a.get_node_or_null("PortalSurface") as Portal
 	var portal_b: Portal = door_b.get_node_or_null("PortalSurface") as Portal
 	assert_eq(portal_b.exit_portal, portal_a)
+
+func test_door_has_sound_open_node() -> void:
+	var door: Door = DoorScene.instantiate()
+	add_child_autofree(door)
+	assert_not_null(door.get_node_or_null("SoundOpen"), "SoundOpen ノードが必要")
+
+func test_door_has_sound_close_node() -> void:
+	var door: Door = DoorScene.instantiate()
+	add_child_autofree(door)
+	assert_not_null(door.get_node_or_null("SoundClose"), "SoundClose ノードが必要")

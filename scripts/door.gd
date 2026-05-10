@@ -12,6 +12,15 @@ var _destination: Door = null
 signal opened
 signal closed
 
+const _SFX_OPEN: AudioStream = preload("res://assets/sounds/door/door_open.ogg")
+const _SFX_CLOSE_1: AudioStream = preload("res://assets/sounds/door/door_close_01.ogg")
+const _SFX_CLOSE_2: AudioStream = preload("res://assets/sounds/door/door_close_02.ogg")
+const _SFX_CLOSE_3: AudioStream = preload("res://assets/sounds/door/door_close_03.ogg")
+const _SFX_CLOSE_4: AudioStream = preload("res://assets/sounds/door/door_close_04.ogg")
+
+@onready var _sound_open: AudioStreamPlayer3D = $SoundOpen
+@onready var _sound_close: AudioStreamPlayer3D = $SoundClose
+
 func _ready() -> void:
 	add_to_group("doors")
 	_update_portal_state()
@@ -39,6 +48,8 @@ func close() -> void:
 	_start_close_animation()
 
 func _start_open_animation() -> void:
+	_sound_open.stream = _SFX_OPEN
+	#_sound_open.play()
 	var hinge: Node3D = get_node_or_null("HingePoint")
 	if hinge == null:
 		_on_open_done()
@@ -53,6 +64,7 @@ func _on_open_done() -> void:
 	opened.emit()
 
 func _start_close_animation() -> void:
+	_sound_open.stream = _SFX_OPEN
 	var hinge: Node3D = get_node_or_null("HingePoint")
 	if hinge == null:
 		_on_close_done()
@@ -62,6 +74,8 @@ func _start_close_animation() -> void:
 	tween.tween_callback(_on_close_done)
 
 func _on_close_done() -> void:
+	_sound_close.stream = _SFX_CLOSE_1
+	_sound_close.play()
 	var dest := _destination
 	_destination = null
 	state = State.CLOSED
