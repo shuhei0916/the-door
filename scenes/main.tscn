@@ -131,4 +131,4 @@ text = "Pos: (0.0, 0.0, 0.0)"
 
 [node name="DoorWheel" parent="." unique_id=1257612392 instance=ExtResource("4")]
 
-[node name="PauseMenu" parent="." instance=ExtResource("5")]
+[node name="PauseMenu" parent="." unique_id=1156069418 instance=ExtResource("5")]
