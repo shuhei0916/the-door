@@ -8,13 +8,15 @@ const JUMP_VELOCITY: float = 4.5
 const MOUSE_SENSITIVITY: float = 0.002
 const INTERACT_RANGE: float = 2.5
 
+var is_interacting_with_wheel: bool = false
+
 @onready var _camera: Camera3D = $Camera3D
 
-var is_interacting_with_wheel: bool = false
 
 func _ready() -> void:
 	if DisplayServer.get_name() != "headless":
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
 
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
@@ -35,8 +37,10 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+
 func _process(delta: float) -> void:
 	_update_interaction(delta)
+
 
 func _update_interaction(_delta: float) -> void:
 	if is_interacting_with_wheel:
@@ -47,6 +51,7 @@ func _update_interaction(_delta: float) -> void:
 		if nearby:
 			interact_hold_started.emit(nearby)
 
+
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * MOUSE_SENSITIVITY)
@@ -56,6 +61,7 @@ func _input(event: InputEvent) -> void:
 
 func _get_input_direction() -> Vector2:
 	return Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+
 
 func teleport_to(target_transform: Transform3D) -> void:
 	global_position = target_transform.origin
